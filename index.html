@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Albion Online 서버 상태</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f4f4f4;
+            padding: 20px;
+        }
+        h1 {
+            margin-top: 50px;
+        }
+        #status {
+            font-size: 24px;
+            font-weight: bold;
+            margin-top: 20px;
+            padding: 10px;
+            display: inline-block;
+            border-radius: 5px;
+        }
+        .online {
+            color: green;
+            background-color: #d4f5d4;
+        }
+        .maintenance {
+            color: orange;
+            background-color: #ffeeba;
+        }
+        .offline {
+            color: red;
+            background-color: #f8d7da;
+        }
+    </style>
+</head>
+<body>
+    <h1>Albion Online 서버 상태</h1>
+    <p id="status">로딩 중...</p>
+    
+    <script>
+        async function fetchServerStatus() {
+            try {
+                const response = await fetch("https://www.albionstatus.com/api/status");
+                const data = await response.json();
+                const statusElement = document.getElementById("status");
+
+                if (data.status === "online") {
+                    statusElement.innerHTML = "✅ 온라인 🟢";
+                    statusElement.className = "online";
+                } else if (data.status === "maintenance") {
+                    statusElement.innerHTML = "⚠️ 유지 보수 중 🟡";
+                    statusElement.className = "maintenance";
+                } else if (data.status === "offline") {
+                    statusElement.innerHTML = "🚨 오프라인 🔴";
+                    statusElement.className = "offline";
+                } else {
+                    statusElement.innerHTML = "❓ 상태 확인 불가";
+                }
+            } catch (error) {
+                document.getElementById("status").innerHTML = "❌ 오류 발생";
+            }
+        }
+
+        fetchServerStatus();
+        setInterval(fetchServerStatus, 300000); // 5분마다 자동 업데이트
+    </script>
+</body>
+</html>
