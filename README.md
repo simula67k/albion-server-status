@@ -1,0 +1,1 @@
+# albion-server-status
