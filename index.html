@@ -45,34 +45,35 @@
     <div id="west-server" class="server-status">서부 서버: 로딩 중...</div>
 
     <script>
-        const servers = {
-            "eu-server": "https://www.albionstatus.com/api/status/eu",
-            "asia-server": "https://www.albionstatus.com/api/status/asia",
-            "west-server": "https://www.albionstatus.com/api/status/us"
-        };
-
         async function fetchServerStatus() {
-            for (const [serverId, apiUrl] of Object.entries(servers)) {
-                try {
-                    const response = await fetch(apiUrl);
-                    const data = await response.json();
-                    const statusElement = document.getElementById(serverId);
+            try {
+                const response = await fetch("http://127.0.0.1:5000/status");
+                const data = await response.json();
 
-                    if (data.status === "online") {
-                        statusElement.innerHTML = `✅ ${serverId.replace("-server", "").toUpperCase()} 서버: 온라인 🟢`;
-                        statusElement.className = "server-status online";
-                    } else if (data.status === "maintenance") {
-                        statusElement.innerHTML = `⚠️ ${serverId.replace("-server", "").toUpperCase()} 서버: 유지 보수 중 🟡`;
-                        statusElement.className = "server-status maintenance";
-                    } else if (data.status === "offline") {
-                        statusElement.innerHTML = `🚨 ${serverId.replace("-server", "").toUpperCase()} 서버: 오프라인 🔴`;
-                        statusElement.className = "server-status offline";
+                function updateStatus(serverId, status) {
+                    const element = document.getElementById(serverId);
+                    if (status === "online") {
+                        element.innerHTML = `✅ ${serverId.replace("-server", "").toUpperCase()} 서버: 온라인 🟢`;
+                        element.className = "server-status online";
+                    } else if (status === "maintenance") {
+                        element.innerHTML = `⚠️ ${serverId.replace("-server", "").toUpperCase()} 서버: 유지 보수 중 🟡`;
+                        element.className = "server-status maintenance";
+                    } else if (status === "offline") {
+                        element.innerHTML = `🚨 ${serverId.replace("-server", "").toUpperCase()} 서버: 오프라인 🔴`;
+                        element.className = "server-status offline";
                     } else {
-                        statusElement.innerHTML = `❓ ${serverId.replace("-server", "").toUpperCase()} 서버: 상태 확인 불가`;
+                        element.innerHTML = `❓ ${serverId.replace("-server", "").toUpperCase()} 서버: 상태 확인 불가`;
                     }
-                } catch (error) {
-                    document.getElementById(serverId).innerHTML = `❌ ${serverId.replace("-server", "").toUpperCase()} 서버: 오류 발생`;
                 }
+
+                updateStatus("eu-server", data.eu);
+                updateStatus("asia-server", data.asia);
+                updateStatus("west-server", data.west);
+
+            } catch (error) {
+                document.getElementById("eu-server").innerHTML = "❌ 유럽 서버: 오류 발생";
+                document.getElementById("asia-server").innerHTML = "❌ 아시아 서버: 오류 발생";
+                document.getElementById("west-server").innerHTML = "❌ 서부 서버: 오류 발생";
             }
         }
 
